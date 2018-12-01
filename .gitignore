@@ -1,0 +1,16 @@
+
+.idea/workspace.xml
+.idea/compiler.xml
+.idea/*
+.idea/misc.xml
+googleDrivePermissions.iml
+out.json
+target/credentialsDrive.json
+target/credentialsSheet.json
+target/
+driveTokens/StoredCredential
+outFolder.json
+outDocument.json
+
+PermissionManager\.iml
+Report.txt
