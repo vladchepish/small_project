@@ -1,0 +1,32 @@
+*::-webkit-input-placeholder {
+	color: #000;
+	opacity: 1;
+	text-align: center;
+}
+*:-moz-placeholder {
+	color: #000;
+	opacity: 1;
+	text-align: center;
+}
+*::-moz-placeholder {
+	color: #000;
+	opacity: 1;
+	text-align: center;
+}
+*:-ms-input-placeholder {
+	color: #000;
+	opacity: 1;
+	text-align: center;
+}
+
+body input:focus:required:invalid,
+body textarea:focus:required:invalid {
+
+}
+body input:required:valid,
+body textarea:required:valid {
+
+}
+body{
+	background: whitesmoke;
+}

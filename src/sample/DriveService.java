@@ -14,15 +14,17 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import com.google.api.services.drive.model.Permission;
+import sample.controllers.DeletePermissionController;
+import sample.controllers.StartPageController;
+
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class DriveService {
 
@@ -39,7 +41,7 @@ public class DriveService {
         // Load client secrets.
         //InputStream in = Main.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
 
-        InputStream in = new FileInputStream(new java.io.File(Controller.getPropertyPath() + java.io.File.separator + CREDENTIALS_FILE_NAME));
+        InputStream in = new FileInputStream(new java.io.File(StartPageController.getPropertyPath() + java.io.File.separator + CREDENTIALS_FILE_NAME));
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
         // Build flow and trigger user authorization request.
@@ -81,7 +83,7 @@ public class DriveService {
 
         do {
             FileList result = driveService.files().list().setQ(query).setSpaces("drive")
-                    .setFields("nextPageToken, files(id, name, permissions)")
+                    .setFields("nextPageToken, files(id, name, permissions, owners, capabilities, ownedByMe)")
                     .setPageToken(pageToken).execute();
             fileList.addAll(result.getFiles());
             for (File file : result.getFiles()) {
@@ -102,6 +104,18 @@ public class DriveService {
         driveService.permissions().delete(fileId, permissionId).execute();
     }
 
+    // create permission
+    public static Permission createPermissions(String fileId, String email) throws IOException {
+        Permission userPermission = new Permission()
+                .setType("user")
+                .setRole("owner")
+                .setEmailAddress(email);
+
+        Drive driveService = getService();
+        Permission createdPermission = driveService.permissions().create(fileId, userPermission).setTransferOwnership(true).execute();
+        return createdPermission;
+    }
+
     // working with files
     // This method takes list folder Files and id root folder
     public static List<com.google.api.services.drive.model.File> getGoogleRootFiles(List<com.google.api.services.drive.model.File> googleRootFoldersd, String googleFolderIdParent) throws IOException {
@@ -113,7 +127,7 @@ public class DriveService {
             do {
                 FileList result = driveService.files().list().setQ(" mimeType != 'application/vnd.google-apps.folder' "
                         + " and '" + googleRootFoldersd.get(i).getId() + "' in parents").setSpaces("drive")
-                        .setFields("nextPageToken, files(id, name, permissions)")
+                        .setFields("nextPageToken, files(id, name, permissions, owners, capabilities, ownedByMe)")
                         .setPageToken(pageToken).execute();
                 documentsList.addAll(result.getFiles());
                 pageToken = result.getNextPageToken();
@@ -125,7 +139,7 @@ public class DriveService {
         do {
             FileList result = driveService.files().list().setQ(" mimeType != 'application/vnd.google-apps.folder' "
                     + " and '" + googleFolderIdParent + "' in parents").setSpaces("drive")
-                    .setFields("nextPageToken, files(id, name, permissions)")
+                    .setFields("nextPageToken, files(id, name, permissions, owners, capabilities, ownedByMe)")
                     .setPageToken(pageToken).execute();
             documentsList.addAll(result.getFiles());
             for (File file : result.getFiles()) {
@@ -138,5 +152,53 @@ public class DriveService {
         return documentsList;
     }
 
+    public static HashMap<String, List<File>> separateBigList(List<File> bigList, String deletedUserEmail){
+        HashMap<String, List<File>> grapes = new HashMap<>();
 
+        List<com.google.api.services.drive.model.File> foldersWithOwnerCurrentUser = new ArrayList<>();
+        List<com.google.api.services.drive.model.File> foldersWithOwnerUserThatShouldBeDeleted = new ArrayList<>();
+        List<com.google.api.services.drive.model.File> foldersWithOnlyReadPermission = new ArrayList<>();
+        List<com.google.api.services.drive.model.File> foldersWithOtherOwnres = new ArrayList<>();
+
+        List<Permission> permissionList;
+
+        for(File folder : bigList){
+            if (folder.getCapabilities().getCanEdit().equals(false)){
+                foldersWithOnlyReadPermission.add(folder);
+            } else if (folder.getOwnedByMe().equals(true)) {
+                foldersWithOwnerCurrentUser.add(folder);
+            } else {
+                permissionList = folder.getPermissions();
+                for (Permission permission : permissionList) {
+                    if (permission.getRole().contains("owner")){
+                        if (permission.getEmailAddress().contains(deletedUserEmail)) {
+                            foldersWithOwnerUserThatShouldBeDeleted.add(folder);
+                        } else {
+                            foldersWithOtherOwnres.add(folder);
+                        }
+                    }
+                }
+            }
+        }
+
+        grapes.put("myFolders", foldersWithOwnerCurrentUser);
+        grapes.put("deletedUserFolders", foldersWithOwnerUserThatShouldBeDeleted);
+        grapes.put("onlyReadFolders", foldersWithOnlyReadPermission);
+        grapes.put("otherFolders", foldersWithOtherOwnres);
+
+        return grapes;
+    }
+
+    public static List<File> sortElementsByOwner(List<File> bigList){
+        List<File> myElementsList = new ArrayList<>();
+        List<File> notMyElementsList = new ArrayList<>();
+        for (File f : bigList){
+            if (f.getOwnedByMe().equals(true)){
+                myElementsList.add(f);
+            } else {
+                notMyElementsList.add(f);
+            }
+        }
+        return myElementsList;
+    }
 }

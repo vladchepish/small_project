@@ -1,0 +1,126 @@
+@media only screen and (min-width : 576px){
+    .phone-number{
+        font-size: 16px;
+    }
+    .top_button{
+        font-size: 16px;
+        width: 150px;
+        line-height: 30px;
+    }
+    .btn-position{
+        padding:9px 0 0 0;
+    }
+    .top-line img {
+        width: 100%;
+        max-width: 130px;
+    }
+    .main-header-part p {
+        font-size: 32px;
+    }
+    p.with-bgc {
+        font-size: 18px;
+    }
+    ul{
+        list-style-type: none !important;
+        padding-left: 4rem;
+    }
+    .pform{
+        font-size: 18px;
+        margin: 0;
+    }
+}
+@media only screen and (min-width : 768px){
+    .team{
+        position: relative;
+    }
+    .text-block {
+        width: 100%;
+        max-width: 75%;
+        padding: 23px 100px 0 100px;
+        margin: auto;
+        height: 175px;
+    }
+    .face{
+        position: absolute;
+
+    }
+    
+    .face img{
+       max-width: 160px;
+       height :215px;
+    }
+    .f1 {
+        top: 0;
+        left: 0;
+        width: 225px;
+        text-align: left;
+    }
+    .f2{
+        top:0;
+        right: 0;
+        width: 225px;
+        text-align: right;
+    }
+    
+    section.frth-sect {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (min-width : 992px){
+    .top-line{
+        height:80px;
+    }
+    .phone-number{
+        font-size: 24px;
+        line-height: 75px;
+    }
+    .top_button {
+        font-size: 24px;
+        width: 235px;
+        line-height: 40px;
+        border-radius: 10px;
+    }
+    .btn-position {
+        padding: 18px 0 0 0;
+    }
+    .main-header-part p {
+        font-size: 38px;
+    }
+    p.with-bgc {
+        font-size: 24px;
+    }
+    .part2 {
+        -o-transform: scale(1.05);
+        -ms-transform: scale(1.05);
+        -moz-transform: scale(1.05);
+        -webkit-transform: scale(1.05);
+        transform: scale(1.05);
+    }
+    .face img {
+        max-width: 100%;
+    }
+    .text-block{
+        max-width: 70%;
+        padding: 40px 125px 0 125px;
+        height: 215px;
+        border-radius: 10px;
+    }
+    .f1{
+        left: 30px;
+    }
+    .f2{
+        right: 30px;
+    }
+    .team{
+        max-width: 930px;
+        margin: auto;
+    }
+    .pform{
+        font-size: 24px;
+        margin: 0;
+    }
+    .footer-mid{
+        padding-top: 15px;
+    }
+}
